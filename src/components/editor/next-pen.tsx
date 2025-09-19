@@ -7,7 +7,14 @@ import { createEffect, createSignal, onCleanup } from 'solid-js';
 import '@/config/editor-config';
 import { Canvas, loadSVGFromString, PencilBrush, util, Circle, Rect, Triangle, Line } from 'fabric';
 import { EraserBrush } from '@erase2d/fabric';
-import { FabricObject, TDataUrlOptions } from 'node_modules/fabric/dist/fabric';
+import {
+    CircleProps,
+    FabricObject,
+    TDataUrlOptions,
+    TOptions,
+    TOriginX,
+    TOriginY,
+} from 'node_modules/fabric/dist/fabric';
 
 export default function NextPen() {
     const [mode, setMode] = createSignal<NextMode>(NextMode.CURSOR);
@@ -118,6 +125,24 @@ export default function NextPen() {
         }
     };
 
+    const calculatePosition = () => {
+        const zoom = canvas.getZoom();
+        const vp = canvas.viewportTransform;
+
+        const visibleWidth = canvas.width / zoom;
+        const visibleHeight = canvas.height / zoom;
+
+        const offsetX = -vp[4] / zoom;
+        const offsetY = -vp[5] / zoom;
+
+        return {
+            left: offsetX + visibleWidth / 2,
+            top: offsetY + visibleHeight / 2,
+            originX: 'center',
+            originY: 'center',
+        };
+    };
+
     const handleZoomScaleChange = (value: number) => {
         const scale = value / 100;
         setZoomScale(scale);
@@ -126,6 +151,7 @@ export default function NextPen() {
     };
 
     const handleShapeAdd = (shape: NextShape) => {
+        const { left, top, originX, originY } = calculatePosition();
         switch (shape) {
             case NextShape.CIRCLE:
                 const circle = new Circle({
@@ -135,9 +161,12 @@ export default function NextPen() {
                     strokeWidth: 3,
                     selectable: true,
                     strokeUniform: false,
+                    left,
+                    top,
+                    originX: originX as TOriginX,
+                    originY: originY as TOriginY,
                 });
                 canvas.add(circle);
-                canvas.centerObject(circle);
                 canvas.setActiveObject(circle);
                 break;
             case NextShape.SQUARE:
@@ -149,6 +178,10 @@ export default function NextPen() {
                     strokeWidth: 3,
                     selectable: true,
                     strokeUniform: false,
+                    left,
+                    top,
+                    originX: originX as TOriginX,
+                    originY: originY as TOriginY,
                 });
                 canvas.add(square);
                 canvas.centerObject(square);
@@ -163,10 +196,13 @@ export default function NextPen() {
                     strokeWidth: 3,
                     selectable: true,
                     strokeUniform: false,
+                    left,
+                    top,
+                    originX: originX as TOriginX,
+                    originY: originY as TOriginY,
                 });
 
                 canvas.add(triangle);
-                canvas.centerObject(triangle);
                 canvas.setActiveObject(triangle);
                 break;
             case NextShape.LINE:
@@ -175,9 +211,12 @@ export default function NextPen() {
                     strokeWidth: 3,
                     selectable: true,
                     strokeUniform: false,
+                    left,
+                    top,
+                    originX: originX as TOriginX,
+                    originY: originY as TOriginY,
                 });
                 canvas.add(line);
-                canvas.centerObject(line);
                 canvas.setActiveObject(line);
                 break;
             default:
