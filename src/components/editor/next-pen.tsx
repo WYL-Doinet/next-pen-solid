@@ -22,6 +22,9 @@ export default function NextPen() {
 
         let pencilBrush!: PencilBrush
 
+        let eraserBrush!: EraserBrush
+
+
         const handleCanvasMode = () => {
 
         }
@@ -59,8 +62,15 @@ export default function NextPen() {
 
                 pencilBrush = new PencilBrush(canvas);
 
+                pencilBrush.width = 10;
 
-                const scale = Math.min(canvasWrapperRef.clientWidth / dimension.width, canvasWrapperRef.clientHeight / dimension.height)
+                eraserBrush = new EraserBrush(canvas)
+
+                eraserBrush.width = 10;
+
+                canvas.freeDrawingCursor = 'default'
+
+                const scale = Math.min((canvasWrapperRef.clientWidth * 0.9) / dimension.width, (canvasWrapperRef.clientHeight * 0.9) / dimension.height)
 
                 canvas.setDimensions({ width: dimension.width * scale, height: dimension.height * scale })
 
@@ -80,25 +90,22 @@ export default function NextPen() {
                                 canvas.isDrawingMode = false;
                                 break;
                         case NextMode.PENCIL:
-                                canvas.isDrawingMode = true,
-                                        canvas.freeDrawingBrush = pencilBrush;
-                                canvas.freeDrawingBrush.width = 10;
-                                canvas.freeDrawingCursor = 'default'
+                                canvas.isDrawingMode = true;
+                                canvas.freeDrawingBrush = pencilBrush;
                                 break
                         default:
                                 canvas.isDrawingMode = true
-                                canvas.freeDrawingBrush = new EraserBrush(canvas)
-                                canvas.freeDrawingBrush.width = 10
-                                canvas.freeDrawingCursor = 'default'
+                                canvas.freeDrawingBrush = eraserBrush
                                 break;
                 }
         }
 
         const handleZoomScaleChange = (value: number) => {
                 const scale = value / 100
+                setZoomScale(scale)
                 canvas.setDimensions({ width: dimension.width * scale, height: dimension.height * scale })
                 canvas.setZoom(scale)
-                setZoomScale(scale)
+
         }
 
         const handleShapeAdd = (shape: NextShape) => {
@@ -115,6 +122,7 @@ export default function NextPen() {
                                 });
                                 canvas.add(circle)
                                 canvas.centerObject(circle)
+                                canvas.setActiveObject(circle)
                                 break;
                         case NextShape.SQUARE:
                                 const square = new Rect({
@@ -128,6 +136,7 @@ export default function NextPen() {
                                 })
                                 canvas.add(square)
                                 canvas.centerObject(square)
+                                canvas.setActiveObject(square)
                                 break;
                         case NextShape.TRIANGLE:
                                 const triangle = new Triangle({
@@ -142,6 +151,7 @@ export default function NextPen() {
 
                                 canvas.add(triangle)
                                 canvas.centerObject(triangle)
+                                canvas.setActiveObject(triangle)
                                 break;
                         case NextShape.LINE:
                                 const line = new Line([50, 50, dimension.width * 0.3, dimension.width * 0.3], {
@@ -152,15 +162,42 @@ export default function NextPen() {
                                 });
                                 canvas.add(line)
                                 canvas.centerObject(line)
+                                canvas.setActiveObject(line)
                                 break;
                         default:
                                 break;
+
                 }
+                canvas.isDrawingMode = false
+                setMode(NextMode.CURSOR)
+        }
+
+        const handlePencilColor = (value: string) => {
+                pencilBrush.color = value
+
+        }
+
+        const handleEraserSize = (value: number) => {
+                eraserBrush.width = value
+        }
+
+        const handlePencilSize = (value: number) => {
+                pencilBrush.width = value
         }
 
         return <EditorLayout>
-                <EditorTopMenu zoomScale={Math.floor(zoomScale() * 100)} onZoomScaleChange={handleZoomScaleChange} onFileUpload={handleFileUpload}></EditorTopMenu>
+                <EditorTopMenu
+                        zoomScale={Math.floor(zoomScale() * 100)}
+                        onZoomScaleChange={handleZoomScaleChange}
+                        onFileUpload={handleFileUpload} />
                 <EditorCanvas ref={canvasWrapperRef} />
-                <EditorBottomMenu mode={mode()} onModeChange={handleModeChange} onShapeAdd={handleShapeAdd}></EditorBottomMenu>
+                <EditorBottomMenu
+                        onPencilSizeChange={handlePencilSize}
+                        onPencilColorChange={handlePencilColor}
+                        mode={mode()}
+                        onModeChange={handleModeChange}
+                        onShapeAdd={handleShapeAdd}
+                        onEraserSizeChange={handleEraserSize}
+                />
         </EditorLayout>
 }

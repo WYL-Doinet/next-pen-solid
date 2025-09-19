@@ -11,3 +11,9 @@ export enum NextShape {
   ARROW  = "arrow",
   LINE  = "LINE"
 }
+
+
+export enum ExportType {
+  OBJECT_ONLY = 'objectOnly',
+  NORMAL = 'normal'
+}
