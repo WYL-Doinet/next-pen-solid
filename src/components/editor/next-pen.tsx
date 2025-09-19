@@ -184,7 +184,6 @@ export default function NextPen() {
                     originY: originY as TOriginY,
                 });
                 canvas.add(square);
-                canvas.centerObject(square);
                 canvas.setActiveObject(square);
                 break;
             case NextShape.TRIANGLE:
