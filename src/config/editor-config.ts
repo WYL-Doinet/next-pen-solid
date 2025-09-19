@@ -1,17 +1,7 @@
-import {
-    Circle,
-    FabricImage,
-    FabricObject,
-    Group,
-    IText,
-    Line,
-    Path,
-    Rect,
-    Triangle,
-} from "fabric";
+import { Circle, FabricImage, FabricObject, Group, IText, Line, Path, Rect, Triangle } from 'fabric';
 
-if (!Object.getOwnPropertyDescriptor(FabricObject.prototype, "selected")) {
-    Object.defineProperty(FabricObject.prototype, "selected", {
+if (!Object.getOwnPropertyDescriptor(FabricObject.prototype, 'selected')) {
+    Object.defineProperty(FabricObject.prototype, 'selected', {
         get: function () {
             return this._selected || false;
         },
@@ -22,8 +12,8 @@ if (!Object.getOwnPropertyDescriptor(FabricObject.prototype, "selected")) {
     });
 }
 
-if (!Object.getOwnPropertyDescriptor(FabricObject.prototype, "locked")) {
-    Object.defineProperty(FabricObject.prototype, "locked", {
+if (!Object.getOwnPropertyDescriptor(FabricObject.prototype, 'locked')) {
+    Object.defineProperty(FabricObject.prototype, 'locked', {
         get: function () {
             return this._locked || false;
         },
@@ -52,17 +42,17 @@ const originalToObject = FabricObject.prototype.toObject;
 FabricObject.prototype.toObject = function (propertiesToInclude: any[] = []) {
     return originalToObject.call(this, [
         ...propertiesToInclude,
-        "lockMovementX",
-        "lockMovementY",
-        "lockScalingX",
-        "lockScalingY",
-        "lockRotation",
-        "selected",
-        "locked",
-        "selectable",
-        "evented",
-        "zIndex",
-        "name",
+        'lockMovementX',
+        'lockMovementY',
+        'lockScalingX',
+        'lockScalingY',
+        'lockRotation',
+        'selected',
+        'locked',
+        'selectable',
+        'evented',
+        'zIndex',
+        'name',
     ]);
 };
 
@@ -70,74 +60,79 @@ IText.ownDefaults = {
     ...IText.ownDefaults,
     hasControls: true,
     transparentCorners: false,
-    borderColor: "#3b82f6",
-    cornerColor: "#3b82f6",
+    borderColor: '#3b82f6',
+    cornerColor: '#3b82f6',
     cornerSize: 10,
-    cornerStyle: "circle",
+    cornerStyle: 'circle',
     strokeUniform: true,
     noScaleCache: false,
     padding: 10,
     lockScalingFlip: true,
     centeredScaling: true,
+    objectCaching: true,
 };
 
 Group.ownDefaults = {
     ...Group.ownDefaults,
     hasControls: true,
     transparentCorners: false,
-    borderColor: "#3b82f6",
-    cornerColor: "#3b82f6",
+    borderColor: '#3b82f6',
+    cornerColor: '#3b82f6',
     cornerSize: 10,
-    cornerStyle: "circle",
+    cornerStyle: 'circle',
     lockScalingFlip: true,
     strokeUniform: true,
     noScaleCache: false,
     padding: 10,
     centeredScaling: true,
+    objectCaching: true,
 };
 
 Circle.ownDefaults = {
     ...Circle.ownDefaults,
     hasControls: true,
     transparentCorners: false,
-    borderColor: "#3b82f6",
-    cornerColor: "#3b82f6",
+    borderColor: '#3b82f6',
+    cornerColor: '#3b82f6',
     cornerSize: 10,
-    cornerStyle: "circle",
+    cornerStyle: 'circle',
     erasable: true,
     strokeUniform: true,
     noScaleCache: false,
     padding: 10,
     centeredScaling: true,
+    objectCaching: true,
 };
 
 Line.ownDefaults = {
     ...Line.ownDefaults,
     hasControls: true,
     transparentCorners: false,
-    borderColor: "#3b82f6",
-    cornerColor: "#3b82f6",
+    borderColor: '#3b82f6',
+    cornerColor: '#3b82f6',
     cornerSize: 10,
-    cornerStyle: "circle",
+    cornerStyle: 'circle',
     strokeUniform: true,
     noScaleCache: false,
     padding: 10,
     centeredScaling: true,
+    objectCaching: true,
 };
 
 FabricImage.ownDefaults = {
     ...FabricImage.ownDefaults,
     erasable: false,
     hasControls: true,
-    borderColor: "#3b82f6",
-    cornerColor: "#3b82f6",
+    borderColor: '#3b82f6',
+    cornerColor: '#3b82f6',
     cornerSize: 10,
     transparentCorners: false,
-    cornerStyle: "circle",
+    cornerStyle: 'circle',
     strokeUniform: true,
     noScaleCache: false,
     padding: 10,
     centeredScaling: true,
+    objectCaching: true,
 };
 
 Path.prototype.erasable = true;
@@ -146,14 +141,15 @@ Path.ownDefaults = {
     ...Path.ownDefaults,
     hasControls: true,
     transparentCorners: false,
-    borderColor: "#3b82f6",
-    cornerColor: "#3b82f6",
+    borderColor: '#3b82f6',
+    cornerColor: '#3b82f6',
     cornerSize: 10,
-    cornerStyle: "circle",
+    cornerStyle: 'circle',
     strokeUniform: true,
     noScaleCache: false,
     centeredScaling: true,
     padding: 10,
+    objectCaching: true,
 };
 
 Rect.ownDefaults = {
@@ -161,14 +157,15 @@ Rect.ownDefaults = {
     erasable: true,
     hasControls: true,
     transparentCorners: false,
-    borderColor: "#3b82f6",
-    cornerColor: "#3b82f6",
+    borderColor: '#3b82f6',
+    cornerColor: '#3b82f6',
     cornerSize: 10,
-    cornerStyle: "circle",
+    cornerStyle: 'circle',
     strokeUniform: true,
     noScaleCache: false,
     padding: 10,
     centeredScaling: true,
+    objectCaching: true,
 };
 
 Triangle.ownDefaults = {
@@ -176,12 +173,13 @@ Triangle.ownDefaults = {
     erasable: true,
     hasControls: true,
     transparentCorners: false,
-    borderColor: "#3b82f6",
-    cornerColor: "#3b82f6",
+    borderColor: '#3b82f6',
+    cornerColor: '#3b82f6',
     cornerSize: 10,
-    cornerStyle: "circle",
+    cornerStyle: 'circle',
     strokeUniform: true,
     noScaleCache: false,
     padding: 10,
     centeredScaling: true,
+    objectCaching: true,
 };

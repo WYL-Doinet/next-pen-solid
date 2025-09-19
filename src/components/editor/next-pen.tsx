@@ -143,11 +143,19 @@ export default function NextPen() {
         };
     };
 
-    const handleZoomScaleChange = (value: number) => {
-        const scale = value / 100;
-        setZoomScale(scale);
-        canvas.setDimensions({ width: dimension.width * scale, height: dimension.height * scale });
-        canvas.setZoom(scale);
+    const handleZoomScaleChange = () => {
+        let timeout: NodeJS.Timeout;
+        return (value: number) => {
+            const scale = value / 100;
+            setZoomScale(scale);
+            if (timeout) {
+                clearTimeout(timeout);
+            }
+            timeout = setTimeout(() => {
+                canvas.setDimensions({ width: dimension.width * scale, height: dimension.height * scale });
+                canvas.setZoom(scale);
+            }, 200);
+        };
     };
 
     const handleShapeAdd = (shape: NextShape) => {
@@ -242,7 +250,7 @@ export default function NextPen() {
             <EditorTopMenu
                 handleDownload={handleDownload}
                 zoomScale={Math.floor(zoomScale() * 100)}
-                onZoomScaleChange={handleZoomScaleChange}
+                onZoomScaleChange={handleZoomScaleChange()}
                 onFileUpload={handleFileUpload}
             />
             <EditorCanvas ref={canvasWrapperRef} />

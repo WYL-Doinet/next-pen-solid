@@ -62,9 +62,9 @@ export default function EditorTopMenu(props: EditorTopMenuProps) {
                         onInput={(e) => props.onZoomScaleChange(Number(e.target.value))}
                         type="range"
                         class="w-32 h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer slider"
-                        min={0.5}
+                        min={1}
                         max={500}
-                        step={0.5}
+                        step={1}
                     />
                     <span class="font-medium text-sm text-gray-700 min-w-[45px] text-center">{props.zoomScale}%</span>
                 </div>
