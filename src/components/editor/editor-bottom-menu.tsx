@@ -10,7 +10,7 @@ import {
 } from 'lucide-solid';
 import { Button } from '../ui/button';
 import { NextMode, NextShape } from '@/types';
-import { createSignal, For, JSX } from 'solid-js';
+import { createSignal, For, JSX, onCleanup } from 'solid-js';
 import {
     DropdownMenu,
     DropdownMenuContent,

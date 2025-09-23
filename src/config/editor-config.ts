@@ -1,4 +1,10 @@
-import { Circle, FabricImage, FabricObject, Group, IText, Line, Path, Rect, Triangle } from 'fabric';
+import { Circle, FabricImage, FabricObject, Group, IText, Line, Path, Rect, StaticCanvas, Triangle } from 'fabric';
+
+declare module 'fabric' {
+    interface FabricObject {
+        erase: () => Promise<Uint8ClampedArray<ArrayBufferLike> | boolean>;
+    }
+}
 
 if (!Object.getOwnPropertyDescriptor(FabricObject.prototype, 'selected')) {
     Object.defineProperty(FabricObject.prototype, 'selected', {
@@ -54,6 +60,30 @@ FabricObject.prototype.toObject = function (propertiesToInclude: any[] = []) {
         'zIndex',
         'name',
     ]);
+};
+
+FabricObject.prototype.erase = async function () {
+    if (!this.clipPath) return false;
+
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d')!;
+
+    const bounds = this.getBoundingRect();
+    canvas.width = Math.ceil(bounds.width);
+    canvas.height = Math.ceil(bounds.height);
+
+    const tempObj = await this.clone();
+    const clipPath = await this.clipPath.clone();
+
+    tempObj.set({ left: 0, top: 0, originX: 'left', originY: 'top' });
+
+    const tempCanvas = new StaticCanvas(canvas, { backgroundColor: undefined });
+
+    tempCanvas.setDimensions({ width: canvas.width, height: canvas.height });
+    tempCanvas.add(tempObj);
+    tempCanvas.renderAll();
+
+    return ctx.getImageData(0, 0, canvas.width, canvas.height, { colorSpace: 'srgb' }).data;
 };
 
 IText.ownDefaults = {
@@ -166,6 +196,7 @@ Rect.ownDefaults = {
     padding: 10,
     centeredScaling: true,
     objectCaching: true,
+    backgroundColor: 'transparent',
 };
 
 Triangle.ownDefaults = {
