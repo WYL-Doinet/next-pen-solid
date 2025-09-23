@@ -63,7 +63,7 @@ export default function EditorTopMenu(props: EditorTopMenuProps) {
                         type="range"
                         class="w-32 h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer slider"
                         min={1}
-                        max={500}
+                        max={100}
                         step={1}
                     />
                     <span class="font-medium text-sm text-gray-700 min-w-[45px] text-center">{props.zoomScale}%</span>
