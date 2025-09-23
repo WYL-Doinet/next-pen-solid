@@ -146,9 +146,11 @@ export default function NextPen() {
 
         eraserBrush.width = 10;
 
+        const container = canvas.upperCanvasEl.parentElement!.parentElement!;
+
         const scale = Math.min(
-            (canvas.upperCanvasEl.parentElement!.clientWidth * 0.9) / dimension.width,
-            (canvas.upperCanvasEl.parentElement!.clientHeight * 0.9) / dimension.height
+            (container.clientWidth * 0.9) / dimension.width,
+            (container.clientHeight * 0.9) / dimension.height
         );
 
         canvas.setDimensions({ width: dimension.width * scale, height: dimension.height * scale });
