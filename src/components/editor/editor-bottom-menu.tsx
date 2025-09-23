@@ -21,6 +21,8 @@ import {
     DropdownMenuTrigger,
 } from '../ui/dropdown-menu';
 import { DropdownMenuSubTriggerProps } from '@kobalte/core/dropdown-menu';
+import { Popover, PopoverContent, PopoverDescription, PopoverTitle, PopoverTrigger } from '../ui/popover';
+import type { PopoverTriggerProps } from '@kobalte/core/popover';
 
 interface EditorBottomMenuProps {
     mode: NextMode;
@@ -85,18 +87,9 @@ export default function EditorBottomMenu(props: EditorBottomMenuProps) {
                         switch (item.type) {
                             case NextMode.ERASER:
                                 return (
-                                    <DropdownMenu
-                                        open={openMenu() === NextMode.ERASER}
-                                        placement="top"
-                                        onOpenChange={(value) => {
-                                            if (value) {
-                                                props.onModeChange(NextMode.ERASER);
-                                            }
-                                            setOpenMenu(value ? NextMode.ERASER : undefined);
-                                        }}
-                                    >
-                                        <DropdownMenuTrigger
-                                            as={(menuProps: DropdownMenuSubTriggerProps) => (
+                                    <Popover placement="top">
+                                        <PopoverTrigger
+                                            as={(menuProps: PopoverTriggerProps) => (
                                                 <Button
                                                     variant={props.mode === item.type ? 'default' : 'ghost'}
                                                     size={'sm'}
@@ -106,44 +99,30 @@ export default function EditorBottomMenu(props: EditorBottomMenuProps) {
                                                 </Button>
                                             )}
                                         />
-                                        <DropdownMenuContent class="w-56">
-                                            <DropdownMenuGroup>
-                                                <DropdownMenuGroupLabel class="space-y-1">
-                                                    <div>Pick Size</div>
-                                                    <div class="flex items-center gap-2.5">
-                                                        <input
-                                                            value={eraserSize()}
-                                                            max={100}
-                                                            oninput={(e) => {
-                                                                handleEraserSize(parseInt(e.target.value, 10));
-                                                            }}
-                                                            type="range"
-                                                            class="bg-gray-200  w-35 rounded-lg h-2 appearance-none cursor-pointer slider"
-                                                        />
-                                                        <span>{eraserSize()} px</span>
-                                                    </div>
-                                                </DropdownMenuGroupLabel>
-                                                {/* <DropdownMenuSeparator /> */}
-                                            </DropdownMenuGroup>
-                                        </DropdownMenuContent>
-                                    </DropdownMenu>
+
+                                        <PopoverContent class=" w-60" onOpenAutoFocus={(e) => e.preventDefault()}>
+                                            <div class="text-sm font-medium">Pick Size</div>
+                                            <div class="flex items-center gap-2.5">
+                                                <input
+                                                    value={eraserSize()}
+                                                    max={100}
+                                                    oninput={(e) => {
+                                                        handleEraserSize(parseInt(e.target.value, 10));
+                                                    }}
+                                                    type="range"
+                                                    class="bg-gray-200  w-35 rounded-lg h-2 appearance-none cursor-pointer slider"
+                                                />
+                                                <span class="text-sm font-medium">{eraserSize()} px</span>
+                                            </div>
+                                        </PopoverContent>
+                                    </Popover>
                                 );
 
                             case NextMode.PENCIL:
                                 return (
-                                    <DropdownMenu
-                                        placement="top"
-                                        open={openMenu() === NextMode.PENCIL}
-                                        onOpenChange={(value) => {
-                                            if (value) {
-                                                props.onModeChange(NextMode.PENCIL);
-                                            }
-
-                                            setOpenMenu(value ? NextMode.PENCIL : undefined);
-                                        }}
-                                    >
-                                        <DropdownMenuTrigger
-                                            as={(menuProps: DropdownMenuSubTriggerProps) => (
+                                    <Popover placement="top">
+                                        <PopoverTrigger
+                                            as={(menuProps: PopoverTriggerProps) => (
                                                 <Button
                                                     variant={props.mode === item.type ? 'default' : 'ghost'}
                                                     size={'sm'}
@@ -153,63 +132,55 @@ export default function EditorBottomMenu(props: EditorBottomMenuProps) {
                                                 </Button>
                                             )}
                                         />
-                                        <DropdownMenuContent class="w-56">
-                                            <DropdownMenuGroup>
-                                                <DropdownMenuGroupLabel
-                                                    class="flex items-center gap-2.5"
-                                                    aria-hidden={false}
+                                        <PopoverContent class="w-56" onOpenAutoFocus={(e) => e.preventDefault()}>
+                                            <div class="flex items-center gap-2.5 space-y-2">
+                                                <div class="text-sm font-medium">Pick color</div>
+                                                <div
+                                                    class="flex relative  gap-2 items-center flex-1 h-5 rounded-md"
+                                                    style={{ 'background-color': pencilColor() }}
                                                 >
-                                                    <span>Pick color</span>
+                                                    <input
+                                                        class="absolute top-0 left-0 w-full h-full opacity-0"
+                                                        oninput={(e) => {
+                                                            handlePencilColor(e.target.value);
+                                                        }}
+                                                        type="color"
+                                                    />
+                                                </div>
+                                            </div>
+
+                                            <For each={colors}>
+                                                {(item) => (
                                                     <div
-                                                        class="flex relative  gap-2 items-center flex-1 h-5 rounded-md"
-                                                        style={{ 'background-color': pencilColor() }}
+                                                        class="flex gap-2.5 space-y-2"
+                                                        onclick={() => handlePencilColor(item.hex)}
                                                     >
-                                                        <input
-                                                            class="absolute top-0 left-0 w-full h-full opacity-0"
-                                                            oninput={(e) => {
-                                                                handlePencilColor(e.target.value);
-                                                            }}
-                                                            type="color"
-                                                        />
+                                                        <div
+                                                            class="size-5"
+                                                            style={{ 'background-color': item.hex }}
+                                                        ></div>
+                                                        <span class="text-sm">{item.label}</span>
                                                     </div>
-                                                </DropdownMenuGroupLabel>
-                                                <DropdownMenuSeparator />
-                                                <For each={colors}>
-                                                    {(item) => (
-                                                        <DropdownMenuItem>
-                                                            <div
-                                                                class="flex gap-2.5"
-                                                                onclick={() => handlePencilColor(item.hex)}
-                                                            >
-                                                                <div
-                                                                    class="size-5"
-                                                                    style={{ 'background-color': item.hex }}
-                                                                ></div>
-                                                                <span>{item.label}</span>
-                                                            </div>
-                                                        </DropdownMenuItem>
-                                                    )}
-                                                </For>
-                                            </DropdownMenuGroup>
-                                            <DropdownMenuGroup>
-                                                <DropdownMenuGroupLabel class="space-y-1" aria-hidden={false}>
-                                                    <div>Pick Size</div>
-                                                    <div class="flex items-center gap-2.5">
-                                                        <input
-                                                            value={pencilSize()}
-                                                            max={100}
-                                                            oninput={(e) => {
-                                                                handlePencilSize(parseInt(e.target.value, 10));
-                                                            }}
-                                                            type="range"
-                                                            class="bg-gray-200  w-35 rounded-lg h-2 appearance-none cursor-pointer slider"
-                                                        />
-                                                        <span>{pencilSize()} px</span>
-                                                    </div>
-                                                </DropdownMenuGroupLabel>
-                                            </DropdownMenuGroup>
-                                        </DropdownMenuContent>
-                                    </DropdownMenu>
+                                                )}
+                                            </For>
+
+                                            <div class="space-y-1">
+                                                <div class="text-sm font-medium">Pick Size</div>
+                                                <div class="flex items-center gap-2.5">
+                                                    <input
+                                                        value={pencilSize()}
+                                                        max={100}
+                                                        oninput={(e) => {
+                                                            handlePencilSize(parseInt(e.target.value, 10));
+                                                        }}
+                                                        type="range"
+                                                        class="bg-gray-200  w-35 rounded-lg h-2 appearance-none cursor-pointer slider"
+                                                    />
+                                                    <span class="text-sm font-medium">{pencilSize()} px</span>
+                                                </div>
+                                            </div>
+                                        </PopoverContent>
+                                    </Popover>
                                 );
 
                             default:
