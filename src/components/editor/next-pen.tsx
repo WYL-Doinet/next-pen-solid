@@ -6,15 +6,8 @@ import { ImageType, NextMode, NextShape } from '@/types';
 import { createEffect, createSignal, onCleanup } from 'solid-js';
 import '@/config/editor-config';
 import { Canvas, loadSVGFromString, PencilBrush, util, Circle, Rect, Triangle, Line } from 'fabric';
-import { ClippingGroup, EraserBrush, ErasingEvent } from '@erase2d/fabric';
-import {
-    CircleProps,
-    FabricObject,
-    TDataUrlOptions,
-    TOptions,
-    TOriginX,
-    TOriginY,
-} from 'node_modules/fabric/dist/fabric';
+import { EraserBrush, ErasingEvent } from '@erase2d/fabric';
+import { FabricObject, TDataUrlOptions, TOriginX, TOriginY } from 'node_modules/fabric/dist/fabric';
 import { sleep } from '@/libs/utils';
 
 export default function NextPen() {
@@ -24,8 +17,6 @@ export default function NextPen() {
     const erasing = new Map();
 
     const dimension = { width: 800, height: 800 };
-
-    let canvasWrapperRef!: HTMLDivElement;
 
     let canvas!: Canvas;
 
@@ -143,6 +134,8 @@ export default function NextPen() {
             allowTouchScrolling: false,
             width: dimension.width,
             height: dimension.height,
+            skipOffscreen: true,
+            perPixelTargetFind: false,
         });
 
         pencilBrush = new PencilBrush(canvas);
@@ -154,8 +147,8 @@ export default function NextPen() {
         eraserBrush.width = 10;
 
         const scale = Math.min(
-            (canvasWrapperRef.clientWidth * 0.9) / dimension.width,
-            (canvasWrapperRef.clientHeight * 0.9) / dimension.height
+            (canvas.upperCanvasEl.parentElement!.clientWidth * 0.9) / dimension.width,
+            (canvas.upperCanvasEl.parentElement!.clientHeight * 0.9) / dimension.height
         );
 
         canvas.setDimensions({ width: dimension.width * scale, height: dimension.height * scale });
@@ -314,7 +307,7 @@ export default function NextPen() {
                 onZoomScaleChange={handleZoomScaleChange()}
                 onFileUpload={handleFileUpload}
             />
-            <EditorCanvas ref={canvasWrapperRef} />
+            <EditorCanvas />
             <EditorBottomMenu
                 onPencilSizeChange={handlePencilSize}
                 onPencilColorChange={handlePencilColor}

@@ -10,18 +10,8 @@ import {
 } from 'lucide-solid';
 import { Button } from '../ui/button';
 import { NextMode, NextShape } from '@/types';
-import { createSignal, For, JSX, onCleanup } from 'solid-js';
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuGroup,
-    DropdownMenuGroupLabel,
-    DropdownMenuItem,
-    DropdownMenuSeparator,
-    DropdownMenuTrigger,
-} from '../ui/dropdown-menu';
-import { DropdownMenuSubTriggerProps } from '@kobalte/core/dropdown-menu';
-import { Popover, PopoverContent, PopoverDescription, PopoverTitle, PopoverTrigger } from '../ui/popover';
+import { createSignal, For, JSX } from 'solid-js';
+import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover';
 import type { PopoverTriggerProps } from '@kobalte/core/popover';
 
 interface EditorBottomMenuProps {
@@ -89,6 +79,7 @@ export default function EditorBottomMenu(props: EditorBottomMenuProps) {
                                 return (
                                     <Popover placement="top">
                                         <PopoverTrigger
+                                            onClick={() => props.onModeChange(NextMode.ERASER)}
                                             as={(menuProps: PopoverTriggerProps) => (
                                                 <Button
                                                     variant={props.mode === item.type ? 'default' : 'ghost'}
@@ -100,8 +91,8 @@ export default function EditorBottomMenu(props: EditorBottomMenuProps) {
                                             )}
                                         />
 
-                                        <PopoverContent class=" w-60" onOpenAutoFocus={(e) => e.preventDefault()}>
-                                            <div class="text-sm font-medium">Pick Size</div>
+                                        <PopoverContent class="w-60" onOpenAutoFocus={(e) => e.preventDefault()}>
+                                            <div class="text-sm font-medium">Size</div>
                                             <div class="flex items-center gap-2.5">
                                                 <input
                                                     value={eraserSize()}
@@ -110,7 +101,7 @@ export default function EditorBottomMenu(props: EditorBottomMenuProps) {
                                                         handleEraserSize(parseInt(e.target.value, 10));
                                                     }}
                                                     type="range"
-                                                    class="bg-gray-200  w-35 rounded-lg h-2 appearance-none cursor-pointer slider"
+                                                    class="bg-gray-200 w-38 rounded-lg h-2 appearance-none cursor-pointer slider"
                                                 />
                                                 <span class="text-sm font-medium">{eraserSize()} px</span>
                                             </div>
@@ -122,6 +113,7 @@ export default function EditorBottomMenu(props: EditorBottomMenuProps) {
                                 return (
                                     <Popover placement="top">
                                         <PopoverTrigger
+                                            onClick={() => props.onModeChange(NextMode.PENCIL)}
                                             as={(menuProps: PopoverTriggerProps) => (
                                                 <Button
                                                     variant={props.mode === item.type ? 'default' : 'ghost'}
@@ -134,7 +126,7 @@ export default function EditorBottomMenu(props: EditorBottomMenuProps) {
                                         />
                                         <PopoverContent class="w-56" onOpenAutoFocus={(e) => e.preventDefault()}>
                                             <div class="flex items-center gap-2.5 space-y-2">
-                                                <div class="text-sm font-medium">Pick color</div>
+                                                <div class="text-sm font-medium">Color</div>
                                                 <div
                                                     class="flex relative  gap-2 items-center flex-1 h-5 rounded-md"
                                                     style={{ 'background-color': pencilColor() }}
@@ -165,7 +157,7 @@ export default function EditorBottomMenu(props: EditorBottomMenuProps) {
                                             </For>
 
                                             <div class="space-y-1">
-                                                <div class="text-sm font-medium">Pick Size</div>
+                                                <div class="text-sm font-medium">Size</div>
                                                 <div class="flex items-center gap-2.5">
                                                     <input
                                                         value={pencilSize()}
