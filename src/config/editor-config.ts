@@ -75,7 +75,7 @@ FabricObject.prototype.erase = async function () {
     const tempObj = await this.clone();
     const clipPath = await this.clipPath.clone();
 
-    tempObj.set({ left: 0, top: 0, originX: 'left', originY: 'top', clipPath });
+    tempObj.set({ left: 0, top: 0, originX: 'left', originY: 'top', clipPath, backgroundColor: undefined });
 
     // tempObj.clipPath!.absolutePositioned = true;
 

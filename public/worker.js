@@ -4,7 +4,7 @@ self.onmessage = function (e) {
     let isErased = true;
 
     for (let i = 3; i < imageData.length; i += 4) {
-        if (imageData[i] !== 0 && imageData[i] !== 255) {
+        if (imageData[i] !== 0) {
             isErased = false;
         }
     }
