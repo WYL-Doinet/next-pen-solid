@@ -7,7 +7,7 @@ import { createEffect, createSignal, onCleanup } from 'solid-js';
 import '@/config/editor-config';
 import { Canvas, loadSVGFromString, PencilBrush, util, Circle, Rect, Triangle, Line } from 'fabric';
 import { EraserBrush, ErasingEvent } from '@erase2d/fabric';
-import { FabricObject, TDataUrlOptions, TOriginX, TOriginY } from 'node_modules/fabric/dist/fabric';
+import type { FabricObject, TDataUrlOptions, TOriginX, TOriginY } from 'fabric';
 import { sleep } from '@/libs/utils';
 
 export default function NextPen() {
@@ -42,7 +42,7 @@ export default function NextPen() {
         document.body.removeChild(a);
     };
 
-    const handleCanvasMode = () => {};
+    const handleCanvasMode = () => { };
 
     const calculatePosition = () => {
         const zoom = canvas.getZoom();
@@ -64,7 +64,7 @@ export default function NextPen() {
 
     const handleFileUpload = (dataUrl: string, type: 'svg' | 'image' = 'image') => {
         if (type === 'svg') {
-            loadSVGFromString(dataUrl, function () {}).then((value) => {
+            loadSVGFromString(dataUrl, function () { }).then((value) => {
                 value.objects.forEach((obj) => obj!.set({ strokeUniform: false }));
 
                 const obj = util.groupSVGElements(value.objects as FabricObject[], {
@@ -133,6 +133,14 @@ export default function NextPen() {
             perPixelTargetFind: false,
         });
 
+
+        // canvas.on('object:moving', () => {
+        //     if (canvas.__renderTimeout) cancelAnimationFrame(canvas.__renderTimeout);
+        //     canvas.__renderTimeout = requestAnimationFrame(() => {
+        //         canvas.renderAll();
+        //     });
+        // });
+
         pencilBrush = new PencilBrush(canvas);
 
         pencilBrush.width = 10;
@@ -144,15 +152,26 @@ export default function NextPen() {
         const container = canvas.upperCanvasEl.parentElement!.parentElement!;
 
         const scale = Math.min(
-            (container.clientWidth * 0.9) / dimension.width,
-            (container.clientHeight * 0.9) / dimension.height
+            ((container.clientWidth) / dimension.width),
+            (container.clientHeight) / dimension.height
         );
 
-        canvas.setDimensions({ width: dimension.width * scale, height: dimension.height * scale });
+        canvas.setDimensions({ width: 800, height: 800 }); // keep internal
+        canvas.setZoom(1); // no internal zoom
 
-        canvas.setZoom(scale);
+        canvas.upperCanvasEl.parentElement!.style.width = `${800 * scale}px`;
+        canvas.upperCanvasEl.parentElement!.style.height = `${800 * scale}px`;
+        canvas.upperCanvasEl.style.width = `${800 * scale}px`;
+        canvas.upperCanvasEl.style.height = `${800 * scale}px`;
+        canvas.lowerCanvasEl.style.width = `${800 * scale}px`;
+        canvas.lowerCanvasEl.style.height = `${800 * scale}px`
 
-        setZoomScale(scale);
+
+        // canvas.setDimensions({ width: dimension.width * scale, height: dimension.height * scale });
+
+        // canvas.setZoom(scale);
+
+        // setZoomScale(scale);
 
         canvas.requestRenderAll();
     });
@@ -194,8 +213,15 @@ export default function NextPen() {
                 clearTimeout(timeout);
             }
             timeout = setTimeout(() => {
-                canvas.setDimensions({ width: dimension.width * scale, height: dimension.height * scale });
-                canvas.setZoom(scale);
+                // canvas.setDimensions({ width: dimension.width * scale, height: dimension.height * scale });
+                // canvas.setZoom(scale);
+                canvas.upperCanvasEl.parentElement!.style.width = `${800 * scale}px`;
+                canvas.upperCanvasEl.parentElement!.style.height = `${800 * scale}px`;
+                canvas.upperCanvasEl.style.width = `${800 * scale}px`;
+                canvas.upperCanvasEl.style.height = `${800 * scale}px`;
+                canvas.lowerCanvasEl.style.width = `${800 * scale}px`;
+                canvas.lowerCanvasEl.style.height = `${800 * scale}px`
+
                 if (canvas.freeDrawingBrush && canvas.freeDrawingBrush instanceof EraserBrush) {
                     const brushWidth = canvas.freeDrawingBrush.width;
                     eraserBrush.dispose();
