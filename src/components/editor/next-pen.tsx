@@ -8,7 +8,6 @@ import '@/config/editor-config';
 import { Canvas, loadSVGFromString, PencilBrush, util, Circle, Rect, Triangle, Line } from 'fabric';
 import { EraserBrush, ErasingEvent } from '@erase2d/fabric';
 import type { FabricObject, TDataUrlOptions, TOriginX, TOriginY } from 'fabric';
-import { sleep } from '@/libs/utils';
 
 export default function NextPen() {
     const [mode, setMode] = createSignal<NextMode>(NextMode.CURSOR);
@@ -131,6 +130,8 @@ export default function NextPen() {
             height: dimension.height,
             skipOffscreen: true,
             perPixelTargetFind: false,
+            renderOnAddRemove: false,
+            skipTargetFind: false,
         });
 
 
@@ -156,22 +157,11 @@ export default function NextPen() {
             (container.clientHeight) / dimension.height
         );
 
-        canvas.setDimensions({ width: 800, height: 800 }); // keep internal
-        canvas.setZoom(1); // no internal zoom
+        canvas.setDimensions({ width: dimension.width * scale, height: dimension.height * scale });
 
-        canvas.upperCanvasEl.parentElement!.style.width = `${800 * scale}px`;
-        canvas.upperCanvasEl.parentElement!.style.height = `${800 * scale}px`;
-        canvas.upperCanvasEl.style.width = `${800 * scale}px`;
-        canvas.upperCanvasEl.style.height = `${800 * scale}px`;
-        canvas.lowerCanvasEl.style.width = `${800 * scale}px`;
-        canvas.lowerCanvasEl.style.height = `${800 * scale}px`
+        canvas.setZoom(scale);
 
-
-        // canvas.setDimensions({ width: dimension.width * scale, height: dimension.height * scale });
-
-        // canvas.setZoom(scale);
-
-        // setZoomScale(scale);
+        setZoomScale(scale);
 
         canvas.requestRenderAll();
     });
@@ -207,27 +197,23 @@ export default function NextPen() {
     const handleZoomScaleChange = () => {
         let timeout: NodeJS.Timeout;
         return (value: number) => {
+
             const scale = value / 100;
             setZoomScale(scale);
             if (timeout) {
                 clearTimeout(timeout);
             }
             timeout = setTimeout(() => {
-                // canvas.setDimensions({ width: dimension.width * scale, height: dimension.height * scale });
-                // canvas.setZoom(scale);
-                canvas.upperCanvasEl.parentElement!.style.width = `${800 * scale}px`;
-                canvas.upperCanvasEl.parentElement!.style.height = `${800 * scale}px`;
-                canvas.upperCanvasEl.style.width = `${800 * scale}px`;
-                canvas.upperCanvasEl.style.height = `${800 * scale}px`;
-                canvas.lowerCanvasEl.style.width = `${800 * scale}px`;
-                canvas.lowerCanvasEl.style.height = `${800 * scale}px`
-
+                const container = canvas.upperCanvasEl.parentElement!.parentElement!;
+                const { width, height } = container.getBoundingClientRect()
+                canvas.setDimensions({ width: dimension.width * scale > width ? width : dimension.width * scale, height:  dimension.height * scale > height ? height :  dimension.height * scale });
+                canvas.setZoom(scale);
                 if (canvas.freeDrawingBrush && canvas.freeDrawingBrush instanceof EraserBrush) {
-                    const brushWidth = canvas.freeDrawingBrush.width;
+                    const newBrush = new EraserBrush(canvas);
+                    newBrush.width = eraserBrush.width;
                     eraserBrush.dispose();
-                    eraserBrush = new EraserBrush(canvas);
-                    eraserBrush.width = brushWidth;
-                    canvas.freeDrawingBrush = eraserBrush;
+                    eraserBrush = newBrush;
+                    canvas.freeDrawingBrush = newBrush;
                     eraserBrush.on('end', eraserEnd);
                 }
             }, 200);
@@ -249,6 +235,7 @@ export default function NextPen() {
                     top,
                     originX: originX as TOriginX,
                     originY: originY as TOriginY,
+
                 });
                 canvas.add(circle);
                 canvas.setActiveObject(circle);
@@ -308,6 +295,7 @@ export default function NextPen() {
         }
         canvas.isDrawingMode = false;
         setMode(NextMode.CURSOR);
+        canvas.requestRenderAll()
     };
 
     const handlePencilColor = (value: string) => {
