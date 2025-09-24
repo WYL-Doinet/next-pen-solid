@@ -3,7 +3,7 @@ import EditorCanvas from '@/components/editor/editor-canvas';
 import EditorLayout from '@/components/editor/editor-layout';
 import EditorTopMenu from '@/components/editor/editor-top-menu';
 import { ImageType, NextMode, NextShape } from '@/types';
-import { createEffect, createSignal, onCleanup } from 'solid-js';
+import {  createSignal, onCleanup, onMount } from 'solid-js';
 import '@/config/editor-config';
 import { Canvas, loadSVGFromString, PencilBrush, util, Circle, Rect, Triangle, Line } from 'fabric';
 import { EraserBrush, ErasingEvent } from '@erase2d/fabric';
@@ -68,7 +68,7 @@ export default function NextPen() {
 
                 const obj = util.groupSVGElements(value.objects as FabricObject[], {
                     ...value.options,
-                    objectCaching: false,
+                    objectCaching: true,
                 });
 
                 const width = dimension.width * 0.2;
@@ -87,6 +87,7 @@ export default function NextPen() {
                     originY: originY,
                 });
                 canvas.add(obj);
+                canvas.requestRenderAll()
             });
         }
     };
@@ -106,7 +107,7 @@ export default function NextPen() {
         e.preventDefault();
 
         const { path, targets } = e.detail;
-
+        
         await eraserBrush.commit({ path, targets });
 
         for (let obj of targets) {
@@ -119,28 +120,20 @@ export default function NextPen() {
         }
     };
 
-    createEffect(() => {
+    onMount(() => {
         canvas = new Canvas('c', {
             isDrawingMode: false,
             backgroundColor: '#ffffff',
             enablePointerEvents: true,
             preserveObjectStacking: true,
-            allowTouchScrolling: true,
+            allowTouchScrolling: false,
             width: dimension.width,
             height: dimension.height,
             skipOffscreen: true,
             perPixelTargetFind: false,
             renderOnAddRemove: false,
-            skipTargetFind:false,
+            skipTargetFind: false,
         });
-
-
-        // canvas.on('object:moving', () => {
-        //     if (canvas.__renderTimeout) cancelAnimationFrame(canvas.__renderTimeout);
-        //     canvas.__renderTimeout = requestAnimationFrame(() => {
-        //         canvas.renderAll();
-        //     });
-        // });
 
         pencilBrush = new PencilBrush(canvas);
 
@@ -153,8 +146,8 @@ export default function NextPen() {
         const container = canvas.upperCanvasEl.parentElement!.parentElement!.getBoundingClientRect();
 
         const scale = Math.min(
-            ((container.width) / dimension.width),
-            (container.height) / dimension.height
+            container.width / dimension.width,
+            container.height / dimension.height
         );
 
         canvas.setDimensions({ width: dimension.width * scale, height: dimension.height * scale });
@@ -190,6 +183,7 @@ export default function NextPen() {
                 eraserBrush = newBrush;
                 canvas.freeDrawingBrush = newBrush;
                 eraserBrush.on('end', eraserEnd);
+
                 break;
         }
     };
@@ -233,7 +227,6 @@ export default function NextPen() {
                     top,
                     originX: originX as TOriginX,
                     originY: originY as TOriginY,
-            
                 });
                 canvas.add(circle);
                 canvas.setActiveObject(circle);
@@ -279,6 +272,7 @@ export default function NextPen() {
                     strokeWidth: 3,
                     selectable: true,
                     strokeUniform: false,
+                    fill: 'transparent',
                     left,
                     top,
                     originX: originX as TOriginX,

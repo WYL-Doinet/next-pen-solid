@@ -1,18 +1,10 @@
 import { CornerUpLeft, CornerUpRight, FileDown, PaperclipIcon, RabbitIcon } from 'lucide-solid';
 import { Button } from '../ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuGroup,
-    DropdownMenuGroupLabel,
-    DropdownMenuItem,
-    DropdownMenuTrigger,
-} from '../ui/dropdown-menu';
-
-import { DropdownMenuSubTriggerProps } from '@kobalte/core/dropdown-menu';
+import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover';
 import { createSignal } from 'solid-js';
 import { ImageType } from '@/types';
+import { PopoverTriggerProps } from '@kobalte/core/popover';
 
 interface EditorTopMenuProps {
     onFileUpload: (dataUrl: string, type: 'svg' | 'image') => void;
@@ -56,7 +48,7 @@ export default function EditorTopMenu(props: EditorTopMenuProps) {
                         <CornerUpRight size={18} class="text-gray-600" />
                     </button>
                 </div>
-                <div class="flex items-center gap-3 bg-gray-50 rounded-lg px-3 py-2 border border-gray-300">
+                <div class="sx:hidden lg:flex items-center gap-3 bg-gray-50 rounded-lg px-3 py-2 border border-gray-300">
                     <input
                         value={props.zoomScale}
                         onInput={(e) => props.onZoomScaleChange(Number(e.target.value))}
@@ -81,72 +73,69 @@ export default function EditorTopMenu(props: EditorTopMenuProps) {
                     />
                 </Button>
                 <Button title="upload" class="flex gap-1.5">
-                    <PaperclipIcon size={18} />{' '}
+                    <PaperclipIcon size={18} />
                 </Button>
-                <DropdownMenu placement="bottom">
-                    <DropdownMenuTrigger
-                        as={(menuProps: DropdownMenuSubTriggerProps) => {
+                <Popover placement="bottom">
+                    <PopoverTrigger
+                        as={(menuProps: PopoverTriggerProps) => {
                             return (
                                 <Button title="export" class="flex gap-1.5 " {...menuProps}>
-                                    <FileDown size={18} />{' '}
+                                    <FileDown size={18} />
                                 </Button>
                             );
                         }}
-                    ></DropdownMenuTrigger>
-                    <DropdownMenuContent>
-                        <DropdownMenuGroup>
-                            <DropdownMenuGroupLabel class="space-y-2" aria-hidden={false}>
-                                <label class="text-xs font-medium block">File Type</label>
-                                <Select
-                                    onChange={(value) => {
-                                        setImageType(value);
-                                    }}
-                                    value={imageType()}
-                                    options={Object.values(ImageType)}
-                                    itemComponent={(props) => (
-                                        <SelectItem class="font-medium" item={props.item}>
-                                            {props.item.rawValue}
-                                        </SelectItem>
-                                    )}
-                                >
-                                    <SelectTrigger>
-                                        <SelectValue<string> class="font-medium">
-                                            {(state) => state.selectedOption()}
-                                        </SelectValue>
-                                    </SelectTrigger>
-                                    <SelectContent />
-                                </Select>
-                                <label class="font-medium text-xs">Size</label>
-                                <div class="flex items-center gap-2.5">
-                                    <input
-                                        min={0.5}
-                                        max={3.5}
-                                        step={0.12}
-                                        value={imageScale()}
-                                        oninput={(e) => setImageScale(Number(e.target.value))}
-                                        type="range"
-                                        class="bg-gray-200  w-[250px] rounded-lg h-2 appearance-none cursor-pointer slider"
-                                    />
-                                    <div class="p-1 border text-center min-w-[50px] rounded-md">{imageScale()}</div>
-                                </div>
-                                <div class="font-light text-xs">
-                                    {Math.floor(800 * imageScale())}x{Math.floor(800 * imageScale())}
-                                </div>
-                            </DropdownMenuGroupLabel>
-                            <DropdownMenuItem class="pointer-events-none">
-                                <Button
-                                    class="w-full pointer-events-auto"
-                                    size={'sm'}
-                                    onclick={() => {
-                                        props.handleDownload(imageType() || ImageType.JPEG, imageScale());
-                                    }}
-                                >
-                                    Download
-                                </Button>
-                            </DropdownMenuItem>
-                        </DropdownMenuGroup>
-                    </DropdownMenuContent>
-                </DropdownMenu>
+                    ></PopoverTrigger>
+                    <PopoverContent onOpenAutoFocus={(e) => e.preventDefault()}>
+                        <div class='space-y-2'>
+                            <label class="text-xs font-medium block">File Type</label>
+                            <Select
+                                onChange={(value) => {
+                                    setImageType(value);
+                                }}
+                                value={imageType()}
+                                options={Object.values(ImageType)}
+                                itemComponent={(props) => (
+                                    <SelectItem class="font-medium" item={props.item}>
+                                        {props.item.rawValue}
+                                    </SelectItem>
+                                )}
+                            >
+                                <SelectTrigger>
+                                    <SelectValue<string> class="font-medium">
+                                        {(state) => state.selectedOption()}
+                                    </SelectValue>
+                                </SelectTrigger>
+                                <SelectContent />
+                            </Select>
+                            <label class="font-medium text-xs">Size</label>
+                            <div class="flex items-center gap-2.5">
+                                <input
+                                    min={0.5}
+                                    max={3.5}
+                                    step={0.12}
+                                    value={imageScale()}
+                                    oninput={(e) => setImageScale(Number(e.target.value))}
+                                    type="range"
+                                    class="bg-gray-200  w-[250px] rounded-lg h-2 appearance-none cursor-pointer slider"
+                                />
+                                <div class="p-1 border text-xs text-center min-w-[50px] rounded-md">{imageScale()}</div>
+                            </div>
+                            <div class="font-normal text-xs">
+                                {Math.floor(800 * imageScale())}x{Math.floor(800 * imageScale())}
+                            </div>
+                            <Button
+                                class="w-full pointer-events-auto"
+                                size={'sm'}
+                                onclick={() => {
+                                    props.handleDownload(imageType() || ImageType.JPEG, imageScale());
+                                }}
+                            >
+                                Download
+                            </Button>
+                        </div>
+
+                    </PopoverContent>
+                </Popover>
             </div>
         </div>
     );

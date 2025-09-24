@@ -69,8 +69,8 @@ FabricObject.prototype.erase = async function () {
     const ctx = canvas.getContext('2d')!;
 
     const bounds = this.getBoundingRect();
-    canvas.width = Math.ceil(bounds.width);
-    canvas.height = Math.ceil(bounds.height);
+    canvas.width = bounds.width;
+    canvas.height = bounds.height;
 
     const tempObj = await this.clone();
     const clipPath = await this.clipPath.clone();
@@ -85,7 +85,7 @@ FabricObject.prototype.erase = async function () {
     tempCanvas.add(tempObj);
     tempCanvas.renderAll();
 
-    return ctx.getImageData(0, 0, canvas.width, canvas.height, { colorSpace: 'srgb' }).data;
+    return ctx.getImageData(0, 0, canvas.width, canvas.height,).data;
 };
 
 IText.ownDefaults = {

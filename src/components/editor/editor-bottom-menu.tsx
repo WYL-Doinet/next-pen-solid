@@ -30,8 +30,6 @@ export default function EditorBottomMenu(props: EditorBottomMenuProps) {
 
     const [eraserSize, setEraserSize] = createSignal(10);
 
-    const [openMenu, setOpenMenu] = createSignal<NextMode | undefined>(undefined);
-
     const nextMode: { icon: JSX.Element; type: NextMode }[] = [
         { icon: <MousePointer2Icon size={15} />, type: NextMode.CURSOR },
         { icon: <PencilIcon size={15} />, type: NextMode.PENCIL },
@@ -92,7 +90,7 @@ export default function EditorBottomMenu(props: EditorBottomMenuProps) {
                                         />
 
                                         <PopoverContent class="w-60" onOpenAutoFocus={(e) => e.preventDefault()}>
-                                            <div class="text-sm font-medium">Size</div>
+                                            <div class="text-xs font-medium">Width</div>
                                             <div class="flex items-center gap-2.5">
                                                 <input
                                                     value={eraserSize()}
@@ -124,11 +122,11 @@ export default function EditorBottomMenu(props: EditorBottomMenuProps) {
                                                 </Button>
                                             )}
                                         />
-                                        <PopoverContent class="w-56" onOpenAutoFocus={(e) => e.preventDefault()}>
-                                            <div class="flex items-center gap-2.5 space-y-2">
-                                                <div class="text-sm font-medium">Color</div>
+                                        <PopoverContent class="w-56 space-y-1.5" onOpenAutoFocus={(e) => e.preventDefault()}>
+                                            <div class="flex items-center gap-2.5 ">
+                                                <div class="text-xs  font-medium">Color</div>
                                                 <div
-                                                    class="flex relative  gap-2 items-center flex-1 h-5 rounded-md"
+                                                    class="flex relative  gap-2 items-center flex-1 h-5  rounded"
                                                     style={{ 'background-color': pencilColor() }}
                                                 >
                                                     <input
@@ -140,7 +138,6 @@ export default function EditorBottomMenu(props: EditorBottomMenuProps) {
                                                     />
                                                 </div>
                                             </div>
-
                                             <For each={colors}>
                                                 {(item) => (
                                                     <div
@@ -151,13 +148,13 @@ export default function EditorBottomMenu(props: EditorBottomMenuProps) {
                                                             class="size-5"
                                                             style={{ 'background-color': item.hex }}
                                                         ></div>
-                                                        <span class="text-sm">{item.label}</span>
+                                                        <span class="text-xs">{item.label}</span>
                                                     </div>
                                                 )}
                                             </For>
 
                                             <div class="space-y-1">
-                                                <div class="text-sm font-medium">Size</div>
+                                                <div class="text-xs font-medium">Width</div>
                                                 <div class="flex items-center gap-2.5">
                                                     <input
                                                         value={pencilSize()}
