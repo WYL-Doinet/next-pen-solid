@@ -110,10 +110,6 @@ export default function NextPen() {
 
         await eraserBrush.commit({ path, targets });
 
-        canvas.requestRenderAll();
-
-        await sleep(1000);
-
         for (let obj of targets) {
             const imageData = await obj.erase();
             if (imageData) {
@@ -122,7 +118,6 @@ export default function NextPen() {
                 worker.postMessage({ id, imageData });
             }
         }
-        canvas.requestRenderAll();
     };
 
     createEffect(() => {
