@@ -125,13 +125,13 @@ export default function NextPen() {
             backgroundColor: '#ffffff',
             enablePointerEvents: true,
             preserveObjectStacking: true,
-            allowTouchScrolling: false,
+            allowTouchScrolling: true,
             width: dimension.width,
             height: dimension.height,
             skipOffscreen: true,
             perPixelTargetFind: false,
             renderOnAddRemove: false,
-            skipTargetFind: false,
+            skipTargetFind:false,
         });
 
 
@@ -150,11 +150,11 @@ export default function NextPen() {
 
         eraserBrush.width = 10;
 
-        const container = canvas.upperCanvasEl.parentElement!.parentElement!;
+        const container = canvas.upperCanvasEl.parentElement!.parentElement!.getBoundingClientRect();
 
         const scale = Math.min(
-            ((container.clientWidth) / dimension.width),
-            (container.clientHeight) / dimension.height
+            ((container.width) / dimension.width),
+            (container.height) / dimension.height
         );
 
         canvas.setDimensions({ width: dimension.width * scale, height: dimension.height * scale });
@@ -204,9 +204,7 @@ export default function NextPen() {
                 clearTimeout(timeout);
             }
             timeout = setTimeout(() => {
-                const container = canvas.upperCanvasEl.parentElement!.parentElement!;
-                const { width, height } = container.getBoundingClientRect()
-                canvas.setDimensions({ width: dimension.width * scale > width ? width : dimension.width * scale, height:  dimension.height * scale > height ? height :  dimension.height * scale });
+                canvas.setDimensions({ width: dimension.width * scale, height: dimension.height * scale });
                 canvas.setZoom(scale);
                 if (canvas.freeDrawingBrush && canvas.freeDrawingBrush instanceof EraserBrush) {
                     const newBrush = new EraserBrush(canvas);
@@ -235,7 +233,7 @@ export default function NextPen() {
                     top,
                     originX: originX as TOriginX,
                     originY: originY as TOriginY,
-
+            
                 });
                 canvas.add(circle);
                 canvas.setActiveObject(circle);
